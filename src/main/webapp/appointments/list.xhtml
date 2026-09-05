@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Appointments</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <style type="text/css">
+        .badge { padding: 3px 8px; border-radius: 4px; font-size: 12px; color: #fff; }
+        .badge-scheduled { background-color: #146c94; }
+        .badge-completed { background-color: #27ae60; }
+        .badge-cancelled { background-color: #d64545; }
+    </style>
+</h:head>
+<h:body>
+    <div class="clinic-header">
+        <h1>Appointments</h1>
+        <div class="nav-links">
+            <h:link outcome="/index" value="Home"/>
+            <h:link outcome="/patients/list" value="Patients"/>
+        </div>
+    </div>
+
+    <div class="clinic-container">
+        <h:form>
+            <h:commandLink value="+ Book New Appointment" action="#{appointmentBean.newAppointment}"
+                           styleClass="btn btn-primary" style="display:inline-block; margin-bottom:15px;"/>
+
+            <h:messages globalOnly="true" layout="table" style="color:#d64545;"/>
+
+            <h:dataTable value="#{appointmentBean.appointments}" var="a" styleClass="clinic-table"
+                         rendered="#{not empty appointmentBean.appointments}">
+                <h:column><f:facet name="header">ID</f:facet>#{a.appointmentId}</h:column>
+                <h:column><f:facet name="header">Patient</f:facet>#{a.patient.fullName}</h:column>
+                <h:column><f:facet name="header">Doctor</f:facet>#{a.doctorName}</h:column>
+                <h:column><f:facet name="header">Date</f:facet>#{a.appointmentDate}</h:column>
+                <h:column><f:facet name="header">Time</f:facet>#{a.appointmentTime}</h:column>
+                <h:column><f:facet name="header">Reason</f:facet>#{a.reason}</h:column>
+                <h:column>
+                    <f:facet name="header">Status</f:facet>
+                    <span style="padding:3px 8px;border-radius:4px;font-size:12px;color:#fff;background-color:#{a.status == 'Scheduled' ? '#146c94' : (a.status == 'Completed' ? '#27ae60' : '#d64545')};">
+                        #{a.status}
+                    </span>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Actions</f:facet>
+                    <h:commandLink value="Edit" action="#{appointmentBean.edit(a)}" styleClass="btn btn-secondary"/>
+                    <h:commandLink value="Delete" action="#{appointmentBean.delete(a)}" styleClass="btn btn-danger"
+                                   onclick="return confirm('Delete this appointment?');"/>
+                </h:column>
+            </h:dataTable>
+
+            <p rendered="#{empty appointmentBean.appointments}" style="color:#7f8c8d; font-style:italic;">
+                No appointments booked yet.
+            </p>
+        </h:form>
+    </div>
+</h:body>
+</html>

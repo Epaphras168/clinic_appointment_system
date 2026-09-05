@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Appointment Form</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <style type="text/css">
+        /* INTERNAL CSS  */
+        .required-star { color: #d64545; margin-left: 3px; }
+    </style>
+    <!-- CLIENT-SIDE JS VALIDATION  -->
+    <script type="text/javascript">
+        function validateAppointmentForm() {
+            var timeField = document.getElementById('apptForm:time');
+            if (timeField &amp;&amp; timeField.value) {
+                var parts = timeField.value.split(':');
+                var hour = parseInt(parts[0], 10);
+                if (hour &lt; 8 || hour &gt; 17) {
+                    alert('Please choose an appointment time between 08:00 and 17:00.');
+                    return false;
+                }
+            }
+            return true;
+        }
+    </script>
+</h:head>
+<h:body>
+    <div class="clinic-header">
+        <h1>#{appointmentBean.appointment.appointmentId == null ? 'Book Appointment' : 'Update Appointment'}</h1>
+        <div class="nav-links"><h:link outcome="/appointments/list" value="Back to List"/></div>
+    </div>
+
+    <div class="clinic-container">
+        <!-- INLINE CSS  -->
+        <h:form id="apptForm" style="max-width:520px; margin:0 auto;" onsubmit="return validateAppointmentForm();">
+
+            <h:messages globalOnly="true" layout="table" style="color:#d64545; margin-bottom:10px;"/>
+
+            <h:inputHidden value="#{appointmentBean.appointment.appointmentId}"/>
+
+            <div class="form-row">
+                <label for="apptForm:patient">Patient <span class="required-star">*</span></label>
+                <h:selectOneMenu id="patient" styleClass="form-input" required="true"
+                                 requiredMessage="Please select a patient"
+                                 value="#{appointmentBean.selectedPatientId}">
+                    <f:selectItem itemLabel="-- Select Patient --" itemValue="#{null}"/>
+                    <f:selectItems value="#{appointmentBean.allPatients}" var="p"
+                                   itemValue="#{p.patientId}" itemLabel="#{p.fullName}"/>
+                </h:selectOneMenu>
+                <h:message for="patient" styleClass="error-text"/>
+            </div>
+
+            <div class="form-row">
+                <label for="apptForm:doctor">Doctor Name <span class="required-star">*</span></label>
+                <h:inputText id="doctor" styleClass="form-input" required="true"
+                             requiredMessage="Doctor name is required"
+                             value="#{appointmentBean.appointment.doctorName}">
+                    <f:validateLength minimum="2" maximum="80"/>
+                </h:inputText>
+                <h:message for="doctor" styleClass="error-text"/>
+            </div>
+
+            <div class="form-row">
+                <label for="apptForm:date">Appointment Date <span class="required-star">*</span></label>
+                <h:inputText id="date" styleClass="form-input" required="true"
+                             requiredMessage="Appointment date is required"
+                             value="#{appointmentBean.appointment.appointmentDate}">
+                    <f:convertDateTime pattern="yyyy-MM-dd" type="localDate"/>
+                </h:inputText>
+                <h:message for="date" styleClass="error-text"/>
+                <small>Format: yyyy-MM-dd (must be today or later)</small>
+            </div>
+
+            <div class="form-row">
+                <label for="apptForm:time">Appointment Time <span class="required-star">*</span></label>
+                <!-- Custom validator method bound from bean enforces business hours -->
+                <h:inputText id="time" styleClass="form-input" required="true"
+                             requiredMessage="Appointment time is required"
+                             value="#{appointmentBean.appointment.appointmentTime}"
+                             validator="#{appointmentBean.validateAppointmentTime}">
+                    <f:convertDateTime pattern="HH:mm" type="localTime"/>
+                </h:inputText>
+                <h:message for="time" styleClass="error-text"/>
+                <small>Format: HH:mm, between 08:00 and 17:00</small>
+            </div>
+
+            <div class="form-row">
+                <label for="apptForm:reason">Reason for Visit <span class="required-star">*</span></label>
+                <h:inputTextarea id="reason" styleClass="form-input" required="true"
+                                  requiredMessage="Reason is required" rows="3"
+                                  value="#{appointmentBean.appointment.reason}">
+                    <f:validateLength maximum="200"/>
+                </h:inputTextarea>
+                <h:message for="reason" styleClass="error-text"/>
+            </div>
+
+            <div class="form-row">
+                <label for="apptForm:status">Status <span class="required-star">*</span></label>
+                <h:selectOneMenu id="status" styleClass="form-input" required="true"
+                                 value="#{appointmentBean.appointment.status}">
+                    <f:selectItem itemLabel="Scheduled" itemValue="Scheduled"/>
+                    <f:selectItem itemLabel="Completed" itemValue="Completed"/>
+                    <f:selectItem itemLabel="Cancelled" itemValue="Cancelled"/>
+                </h:selectOneMenu>
+                <h:message for="status" styleClass="error-text"/>
+            </div>
+
+            <h:commandButton value="Save Appointment" action="#{appointmentBean.save}" styleClass="btn btn-primary"/>
+            <h:link outcome="/appointments/list" value="Cancel" styleClass="btn btn-secondary"/>
+        </h:form>
+    </div>
+</h:body>
+</html>

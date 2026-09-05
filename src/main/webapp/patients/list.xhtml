@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Patients</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <style type="text/css">
+        /* INTERNAL CSS */
+        .status-empty { color: #7f8c8d; font-style: italic; }
+    </style>
+</h:head>
+<h:body>
+    <div class="clinic-header">
+        <h1>Patient Records</h1>
+        <div class="nav-links">
+            <h:link outcome="/index" value="Home"/>
+            <h:link outcome="/appointments/list" value="Appointments"/>
+        </div>
+    </div>
+
+    <div class="clinic-container">
+        <h:form>
+            <h:commandLink value="+ Register New Patient" action="#{patientBean.newPatient}"
+                           styleClass="btn btn-primary" style="display:inline-block; margin-bottom:15px;"/>
+
+            <h:messages globalOnly="true" layout="table" style="color:#d64545;"/>
+
+            <h:dataTable value="#{patientBean.patients}" var="p" styleClass="clinic-table"
+                         rendered="#{not empty patientBean.patients}">
+                <h:column><f:facet name="header">ID</f:facet>#{p.patientId}</h:column>
+                <h:column><f:facet name="header">Full Name</f:facet>#{p.fullName}</h:column>
+                <h:column><f:facet name="header">DOB</f:facet>#{p.dateOfBirth}</h:column>
+                <h:column><f:facet name="header">Gender</f:facet>#{p.gender}</h:column>
+                <h:column><f:facet name="header">Phone</f:facet>#{p.phone}</h:column>
+                <h:column><f:facet name="header">Email</f:facet>#{p.email}</h:column>
+                <h:column>
+                    <f:facet name="header">Actions</f:facet>
+                    <h:commandLink value="Edit" action="#{patientBean.edit(p)}" styleClass="btn btn-secondary"/>
+                    <h:commandLink value="Delete" action="#{patientBean.delete(p)}" styleClass="btn btn-danger"
+                                   onclick="return confirm('Delete this patient?');"/>
+                </h:column>
+            </h:dataTable>
+
+            <h:panelGroup rendered="#{empty patientBean.patients}">
+                <p class="status-empty">No patients registered yet.</p>
+            </h:panelGroup>
+        </h:form>
+    </div>
+</h:body>
+</html>
