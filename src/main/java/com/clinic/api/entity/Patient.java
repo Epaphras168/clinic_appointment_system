@@ -1,5 +1,6 @@
-package com.clinic.entity;
+package com.clinic.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
@@ -7,12 +8,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Patient entity.
- * Server-side validation (Bean Validation / Hibernate Validator) is declared
- * here via annotations such as @NotBlank, @Pattern, @Past, @Email.
- * This is validation type #1 (server-side / model layer).
- */
 @Entity
 @Table(name = "patient")
 public class Patient implements Serializable {
@@ -44,7 +39,7 @@ public class Patient implements Serializable {
 
     @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "^(\\+250|0)7[0-9]{8}$", message = "Enter a valid Rwandan phone number, e.g. 07XXXXXXXX")
-    @Column(name = "phone", nullable = false, length = 20)
+    @Column(name = "phone", nullable = false, length = 20, unique = true)
     private String phone;
 
     @Email(message = "Enter a valid email address")
@@ -56,12 +51,12 @@ public class Patient implements Serializable {
     @Column(name = "address", length = 150)
     private String address;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Appointment> appointments = new ArrayList<>();
 
     public Patient() {}
 
-    // Getters and setters
     public Long getPatientId() { return patientId; }
     public void setPatientId(Long patientId) { this.patientId = patientId; }
 

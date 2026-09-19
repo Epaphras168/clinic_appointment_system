@@ -1,0 +1,169 @@
+{
+  "info": {
+    "name": "Clinic Patient & Appointment API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" }
+  ],
+  "item": [
+    {
+      "name": "Patients",
+      "item": [
+        { "name": "List patients", "request": { "method": "GET", "url": "{{baseUrl}}/api/patients" } },
+        { "name": "Get patient by id", "request": { "method": "GET", "url": "{{baseUrl}}/api/patients/1" } },
+        {
+          "name": "Create patient",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/patients",
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"dateOfBirth\": \"1998-05-10\",\n  \"gender\": \"Male\",\n  \"phone\": \"0700000001\",\n  \"email\": \"john@example.com\",\n  \"address\": \"Kigali\"\n}" }
+          }
+        },
+        {
+          "name": "Update patient",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/patients/1",
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"dateOfBirth\": \"1998-05-10\",\n  \"gender\": \"Male\",\n  \"phone\": \"0700000001\",\n  \"email\": \"john2@example.com\",\n  \"address\": \"Huye\"\n}" }
+          }
+        },
+        { "name": "Delete patient", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/patients/1" } },
+        {
+          "name": "[Negative] Create patient - missing required fields (expect 400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/patients",
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"\",\n  \"phone\": \"invalid\"\n}" }
+          }
+        },
+        {
+          "name": "[Negative] Create patient - duplicate phone (expect 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/patients",
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Dup\",\n  \"lastName\": \"Phone\",\n  \"dateOfBirth\": \"1998-05-10\",\n  \"gender\": \"Male\",\n  \"phone\": \"0722334455\",\n  \"address\": \"Kigali\"\n}" }
+          }
+        },
+        {
+          "name": "[Negative] Delete patient with active appointment (expect 409)",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/patients/1" }
+        }
+      ]
+    },
+    {
+      "name": "Doctors",
+      "item": [
+        { "name": "List doctors", "request": { "method": "GET", "url": "{{baseUrl}}/api/doctors" } },
+        { "name": "Get doctor by id", "request": { "method": "GET", "url": "{{baseUrl}}/api/doctors/1" } },
+        {
+          "name": "Create doctor",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/doctors",
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Dr. New Doctor\",\n  \"specialization\": \"Dermatology\",\n  \"phone\": \"0790000001\",\n  \"availabilityStartHour\": 8,\n  \"availabilityEndHour\": 16\n}" }
+          }
+        },
+        {
+          "name": "Update doctor",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/doctors/1",
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Dr. Alice Uwimana\",\n  \"specialization\": \"Cardiology\",\n  \"phone\": \"0788123456\",\n  \"availabilityStartHour\": 9,\n  \"availabilityEndHour\": 17\n}" }
+          }
+        },
+        { "name": "Delete doctor", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/doctors/1" } },
+        {
+          "name": "[Negative] Create doctor - invalid availability window start>=end (expect 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/doctors",
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Dr. Bad Hours\",\n  \"specialization\": \"Neurology\",\n  \"phone\": \"0788111222\",\n  \"availabilityStartHour\": 15,\n  \"availabilityEndHour\": 10\n}" }
+          }
+        },
+        {
+          "name": "[Negative] Delete doctor with active appointment (expect 409)",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/doctors/1" }
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        { "name": "List appointments", "request": { "method": "GET", "url": "{{baseUrl}}/api/appointments" } },
+        { "name": "Get appointment by id", "request": { "method": "GET", "url": "{{baseUrl}}/api/appointments/1" } },
+        {
+          "name": "Create appointment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/appointments",
+            "body": { "mode": "raw", "raw": "{\n  \"patientId\": 1,\n  \"doctorId\": 1,\n  \"appointmentDate\": \"2026-12-01\",\n  \"appointmentTime\": \"10:00:00\",\n  \"reason\": \"Checkup\"\n}" }
+          }
+        },
+        {
+          "name": "Update appointment",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/appointments/1",
+            "body": { "mode": "raw", "raw": "{\n  \"patientId\": 1,\n  \"doctorId\": 1,\n  \"appointmentDate\": \"2026-12-01\",\n  \"appointmentTime\": \"11:00:00\",\n  \"reason\": \"Checkup - rescheduled\",\n  \"status\": \"Scheduled\"\n}" }
+          }
+        },
+        { "name": "Delete appointment", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/appointments/1" } },
+        {
+          "name": "[Negative] Create appointment - missing reason (expect 400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/appointments",
+            "body": { "mode": "raw", "raw": "{\n  \"patientId\": 1,\n  \"doctorId\": 1,\n  \"appointmentDate\": \"2026-12-01\",\n  \"appointmentTime\": \"10:00:00\"\n}" }
+          }
+        },
+        {
+          "name": "[Negative] Create appointment - in the past (expect 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/appointments",
+            "body": { "mode": "raw", "raw": "{\n  \"patientId\": 1,\n  \"doctorId\": 1,\n  \"appointmentDate\": \"2020-01-01\",\n  \"appointmentTime\": \"10:00:00\",\n  \"reason\": \"Past\"\n}" }
+          }
+        },
+        {
+          "name": "[Negative] Create appointment - outside doctor availability (expect 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/appointments",
+            "body": { "mode": "raw", "raw": "{\n  \"patientId\": 1,\n  \"doctorId\": 1,\n  \"appointmentDate\": \"2026-12-01\",\n  \"appointmentTime\": \"20:00:00\",\n  \"reason\": \"Too late\"\n}" }
+          }
+        },
+        {
+          "name": "[Negative] Create appointment - double booking same doctor/date/time (expect 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/appointments",
+            "body": { "mode": "raw", "raw": "{\n  \"patientId\": 2,\n  \"doctorId\": 1,\n  \"appointmentDate\": \"2026-12-01\",\n  \"appointmentTime\": \"10:00:00\",\n  \"reason\": \"Conflicting slot\"\n}" }
+          }
+        },
+        {
+          "name": "[Negative] Create appointment - unknown patient id (expect 404)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/appointments",
+            "body": { "mode": "raw", "raw": "{\n  \"patientId\": 9999,\n  \"doctorId\": 1,\n  \"appointmentDate\": \"2026-12-01\",\n  \"appointmentTime\": \"10:00:00\",\n  \"reason\": \"Unknown patient\"\n}" }
+          }
+        }
+      ]
+    }
+  ]
+}

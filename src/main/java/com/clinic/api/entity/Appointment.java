@@ -1,4 +1,4 @@
-package com.clinic.entity;
+package com.clinic.api.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -20,13 +20,12 @@ public class Appointment implements Serializable {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @NotBlank(message = "Doctor name is required")
-    @Size(min = 2, max = 80, message = "Doctor name must be 2-80 characters")
-    @Column(name = "doctor_name", nullable = false, length = 80)
-    private String doctorName;
+    @NotNull(message = "Doctor is required")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Doctor doctor;
 
     @NotNull(message = "Appointment date is required")
-    @FutureOrPresent(message = "Appointment date cannot be in the past")
     @Column(name = "appointment_date", nullable = false)
     private LocalDate appointmentDate;
 
@@ -52,8 +51,8 @@ public class Appointment implements Serializable {
     public Patient getPatient() { return patient; }
     public void setPatient(Patient patient) { this.patient = patient; }
 
-    public String getDoctorName() { return doctorName; }
-    public void setDoctorName(String doctorName) { this.doctorName = doctorName; }
+    public Doctor getDoctor() { return doctor; }
+    public void setDoctor(Doctor doctor) { this.doctor = doctor; }
 
     public LocalDate getAppointmentDate() { return appointmentDate; }
     public void setAppointmentDate(LocalDate appointmentDate) { this.appointmentDate = appointmentDate; }
